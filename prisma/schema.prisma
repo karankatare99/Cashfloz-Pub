@@ -1,0 +1,205 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  username      String   @unique
+  passwordHash  String
+  avatarUrl     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  portfolio     Portfolio?
+  orders        Order[]
+  trades        Trade[]
+  watchlist     WatchlistItem[]
+  sessions      Session[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Portfolio ───────────────────────────────────────────────────────────────
+
+model Portfolio {
+  id            String     @id @default(cuid())
+  userId        String     @unique
+  cashBalance   Float      @default(100000) // starts with $100k paper money
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  positions     Position[]
+  snapshots     PortfolioSnapshot[]
+}
+
+// Daily snapshot for the equity curve chart on the dashboard
+model PortfolioSnapshot {
+  id          String    @id @default(cuid())
+  portfolioId String
+  totalValue  Float
+  cashBalance Float
+  pnl         Float
+  pnlPercent  Float
+  takenAt     DateTime  @default(now())
+
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+}
+
+// ─── Markets ─────────────────────────────────────────────────────────────────
+
+model Asset {
+  id          String      @id @default(cuid())
+  symbol      String      @unique  // BTC, ETH, AAPL
+  name        String               // Bitcoin, Ethereum, Apple Inc.
+  type        AssetType            // CRYPTO, STOCK, FOREX, COMMODITY
+  baseAsset   String               // BTC
+  quoteAsset  String               // USD
+  logoUrl     String?
+  isActive    Boolean     @default(true)
+
+  positions   Position[]
+  orders      Order[]
+  trades      Trade[]
+  watchlist   WatchlistItem[]
+  candles     Candle[]
+}
+
+enum AssetType {
+  CRYPTO
+  STOCK
+  FOREX
+  COMMODITY
+  INDEX
+}
+
+// Seeded fake OHLCV candle data for charts
+model Candle {
+  id        String   @id @default(cuid())
+  assetId   String
+  timeframe String   // 1m, 5m, 15m, 1H, 4H, 1D, 1W
+  time      Int      // unix timestamp
+  open      Float
+  high      Float
+  low       Float
+  close     Float
+  volume    Float
+
+  asset     Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([assetId, timeframe, time])
+  @@index([assetId, timeframe])
+}
+
+// ─── Trading ─────────────────────────────────────────────────────────────────
+
+model Position {
+  id            String         @id @default(cuid())
+  portfolioId   String
+  assetId       String
+  side          PositionSide   // LONG, SHORT
+  size          Float          // quantity held
+  entryPrice    Float
+  liquidationPrice Float?
+  leverage      Float          @default(1)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  portfolio     Portfolio      @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  asset         Asset          @relation(fields: [assetId], references: [id])
+
+  @@unique([portfolioId, assetId, side])
+}
+
+enum PositionSide {
+  LONG
+  SHORT
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  userId      String
+  assetId     String
+  side        OrderSide   // BUY, SELL
+  type        OrderType   // MARKET, LIMIT, STOP_LIMIT
+  status      OrderStatus @default(PENDING)
+  size        Float
+  price       Float?      // null for market orders
+  stopPrice   Float?      // for stop-limit
+  filledAt    DateTime?
+  cancelledAt DateTime?
+  createdAt   DateTime    @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  asset       Asset       @relation(fields: [assetId], references: [id])
+  trade       Trade?
+}
+
+enum OrderSide {
+  BUY
+  SELL
+}
+
+enum OrderType {
+  MARKET
+  LIMIT
+  STOP_LIMIT
+}
+
+enum OrderStatus {
+  PENDING
+  FILLED
+  CANCELLED
+  REJECTED
+}
+
+// A trade is created when an order is filled
+model Trade {
+  id          String    @id @default(cuid())
+  userId      String
+  orderId     String    @unique
+  assetId     String
+  side        OrderSide
+  size        Float
+  price       Float
+  fee         Float     @default(0)
+  total       Float     // size * price
+  executedAt  DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order       Order     @relation(fields: [orderId], references: [id])
+  asset       Asset     @relation(fields: [assetId], references: [id])
+}
+
+// ─── Watchlist ────────────────────────────────────────────────────────────────
+
+model WatchlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  assetId   String
+  addedAt   DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  asset     Asset    @relation(fields: [assetId], references: [id])
+
+  @@unique([userId, assetId])
+}
