@@ -5,6 +5,7 @@ import { Navbar } from "../../components/layout/Navbar"
 import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "../../components/ui/tabs"
 import { ArrowUpRight, ArrowDownRight, TrendingUp, History, PieChart } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 // [CASHFLOZ UI] — Animation: Shared staggered variants for lists and grids
 const staggerContainer: Variants = {
@@ -64,6 +65,7 @@ function MiniSparkline({ up }: { up: boolean }) {
 
 export default function DashboardPage() {
   const [filter, setFilter] = useState("1M")
+  const router = useRouter()
   
   // [CASHFLOZ UI] — Parallax: Scroll tracking for background elements
   const { scrollY } = useScroll()
@@ -155,7 +157,7 @@ export default function DashboardPage() {
              </Card>
            </motion.div>
            
-           <motion.div variants={staggerItem} className="h-full">
+           <motion.div onClick={() => { router.push("/deposit") }} variants={staggerItem} className="h-full">
              <Card className="h-full bg-[#E8602C]/10 border border-[#E8602C]/30 rounded-2xl cursor-pointer hover:bg-[#E8602C]/20 hover:scale-[1.02] hover:shadow-[0_0_24px_rgba(232,96,44,0.25)] transition-all duration-200 ease-out flex items-center justify-center p-6 min-h-[140px] group">
                 <div className="flex items-center gap-3 text-[#E8602C] font-inter text-[13px] tracking-[0.04em] font-medium uppercase group-active:scale-95 transition-transform">
                    <span>Deposit Funds</span> 
