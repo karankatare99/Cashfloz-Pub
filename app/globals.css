@@ -1,26 +1,83 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  /* Core Typography Stack */
+  --font-space-grotesk: var(--font-space-grotesk), "Helvetica Neue", Arial, sans-serif;
+  --font-inter: var(--font-inter), "Segoe UI", sans-serif;
+  --font-jetbrains-mono: var(--font-jetbrains-mono), "Courier New", monospace;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* CASHFLOZ Premium Dark Theme */
+  --color-navy: #0A0A0F;
+  --color-cream: #F5EDD6;
+  --color-accent: #E8602C; /* Ember */
+  --color-success: #00FF88; /* Green for buy/positive states */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* UI Animation Defaults (Kept for shadcn/radix compatibility) */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
   }
 }
 
+:root {
+  color-scheme: dark;
+}
+
+html {
+  /* [CASHFLOZ UI] — Typography: Crisp font rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* [CASHFLOZ UI] — Colors: Global background and text mapping */
+  background-color: var(--color-navy);
+  color: var(--color-cream);
+  font-family: var(--font-inter);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* [CASHFLOZ UI] — Visual Effects: Custom text selection */
+::selection {
+  background-color: rgba(232, 96, 44, 0.3); /* Ember at 30% opacity */
+  color: #FFFFFF;
+}
+::-moz-selection {
+  background-color: rgba(232, 96, 44, 0.3);
+  color: #FFFFFF;
+}
+
+/* [CASHFLOZ UI] — Visual Effects: Thin premium scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-accent);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ff7645; /* Slightly lighter ember on hover */
 }
