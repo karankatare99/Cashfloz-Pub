@@ -12,21 +12,18 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { email, username, password } = body
 
-    // ─── Validation ───────────────────────────────────────────────────────────
     if (!email || !username || !password) {
       return NextResponse.json(
         { error: "Email, username and password are required." },
         { status: 400 }
       )
     }
-
     if (password.length < 8) {
       return NextResponse.json(
         { error: "Password must be at least 8 characters." },
         { status: 400 }
       )
     }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       return NextResponse.json(
@@ -34,7 +31,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       )
     }
-
     if (username.length < 3 || username.length > 24) {
       return NextResponse.json(
         { error: "Username must be between 3 and 24 characters." },
@@ -42,7 +38,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // ─── Uniqueness check ─────────────────────────────────────────────────────
     const existing = await prisma.user.findFirst({
       where: {
         OR: [
@@ -61,7 +56,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // ─── Create user + portfolio + session in one transaction ─────────────────
     const passwordHash = hashPassword(password)
     const token = generateSessionToken()
     const expiresAt = sessionExpiryDate()
@@ -73,43 +67,21 @@ export async function POST(req: NextRequest) {
           username: username.toLowerCase(),
           passwordHash,
           portfolio: {
-            create: {
-              cashBalance: 100000,
-            },
+            create: { cashBalance: 100000 },
           },
         },
-        select: {
-          id: true,
-          email: true,
-          username: true,
-          createdAt: true,
-        },
+        select: { id: true, email: true, username: true, createdAt: true },
       })
-
       const session = await tx.session.create({
-        data: {
-          userId: user.id,
-          token,
-          expiresAt,
-        },
+        data: { userId: user.id, token, expiresAt },
       })
-
       return { user, session }
     })
 
-    // ─── Set session cookie ───────────────────────────────────────────────────
     const response = NextResponse.json(
-      {
-        user: {
-          id: user.id,
-          email: user.email,
-          username: user.username,
-          createdAt: user.createdAt,
-        },
-      },
+      { user: { id: user.id, email: user.email, username: user.username, createdAt: user.createdAt } },
       { status: 201 }
     )
-
     response.cookies.set(SESSION_COOKIE, session.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -117,7 +89,6 @@ export async function POST(req: NextRequest) {
       expires: expiresAt,
       path: "/",
     })
-
     return response
   } catch (err) {
     console.error("[register]", err)

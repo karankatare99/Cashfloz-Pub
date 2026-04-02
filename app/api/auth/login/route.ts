@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 import {
-  hashPassword,
+  verifyPassword,
   generateSessionToken,
   sessionExpiryDate,
   SESSION_COOKIE,
@@ -10,117 +10,61 @@ import {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { email, username, password } = body
+    const { email, password } = body
 
-    // ─── Validation ───────────────────────────────────────────────────────────
-    if (!email || !username || !password) {
+    if (!email || !password) {
       return NextResponse.json(
-        { error: "Email, username and password are required." },
+        { error: "Email and password are required." },
         { status: 400 }
       )
     }
 
-    if (password.length < 8) {
-      return NextResponse.json(
-        { error: "Password must be at least 8 characters." },
-        { status: 400 }
-      )
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: "Invalid email address." },
-        { status: 400 }
-      )
-    }
-
-    if (username.length < 3 || username.length > 24) {
-      return NextResponse.json(
-        { error: "Username must be between 3 and 24 characters." },
-        { status: 400 }
-      )
-    }
-
-    // ─── Uniqueness check ─────────────────────────────────────────────────────
-    const existing = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { email: email.toLowerCase() },
-          { username: username.toLowerCase() },
-        ],
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        passwordHash: true,
+        avatarUrl: true,
+        createdAt: true,
       },
-      select: { email: true, username: true },
     })
 
-    if (existing) {
-      const field = existing.email === email.toLowerCase() ? "email" : "username"
+    // Same error for wrong email or wrong password — no enumeration
+    if (!user || !verifyPassword(password, user.passwordHash)) {
       return NextResponse.json(
-        { error: `This ${field} is already taken.` },
-        { status: 409 }
+        { error: "Invalid email or password." },
+        { status: 401 }
       )
     }
 
-    // ─── Create user + portfolio + session in one transaction ─────────────────
-    const passwordHash = hashPassword(password)
     const token = generateSessionToken()
     const expiresAt = sessionExpiryDate()
 
-    const { user, session } = await prisma.$transaction(async (tx) => {
-      const user = await tx.user.create({
-        data: {
-          email: email.toLowerCase(),
-          username: username.toLowerCase(),
-          passwordHash,
-          portfolio: {
-            create: {
-              cashBalance: 100000,
-            },
-          },
-        },
-        select: {
-          id: true,
-          email: true,
-          username: true,
-          createdAt: true,
-        },
-      })
-
-      const session = await tx.session.create({
-        data: {
-          userId: user.id,
-          token,
-          expiresAt,
-        },
-      })
-
-      return { user, session }
+    await prisma.session.create({
+      data: { userId: user.id, token, expiresAt },
     })
 
-    // ─── Set session cookie ───────────────────────────────────────────────────
-    const response = NextResponse.json(
-      {
-        user: {
-          id: user.id,
-          email: user.email,
-          username: user.username,
-          createdAt: user.createdAt,
-        },
+    const response = NextResponse.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        avatarUrl: user.avatarUrl,
+        createdAt: user.createdAt,
       },
-      { status: 201 }
-    )
-
-    response.cookies.set(SESSION_COOKIE, session.token, {
+    })
+    response.cookies.set(SESSION_COOKIE, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       expires: expiresAt,
       path: "/",
     })
-
     return response
   } catch (err) {
-    console.error("[register]", err)
+    console.error("[login]", err)
     return NextResponse.json(
       { error: "Something went wrong. Please try again." },
       { status: 500 }
