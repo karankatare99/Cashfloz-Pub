@@ -1,19 +1,36 @@
 "use client"
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { useRouter } from "next/navigation"
 import { Card, CardHeader, CardTitle, CardContent } from "../../../components/ui/card"
-import { TrendingUp, ArrowUpRight } from "lucide-react"
+import { TrendingUp, TrendingDown, ArrowUpRight } from "lucide-react"
 import { staggerContainer, staggerItem } from "./animations"
 import { AnimatedCounter, BalanceSkeleton, MiniSparkline } from "./DashboardUtilities"
+import axios from "axios"
 
-interface OverviewStatsProps {
-  cashBalance: number | null;
-  balanceLoading: boolean;
+interface Stats {
+  cashBalance: number
+  pnl24h: number
+  pnlRealized: number
+  marginUsed: number
+  allTimePct: number
 }
 
-export function OverviewStats({ cashBalance, balanceLoading }: OverviewStatsProps) {
+export function OverviewStats() {
   const router = useRouter()
+  const [stats, setStats] = useState<Stats | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    axios
+      .get("/api/dashboard/stats")
+      .then((res) => setStats(res.data))
+      .catch(() => setStats(null))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const pnlPositive = stats ? stats.pnl24h >= 0 : true
+  const allTimePositive = stats ? stats.allTimePct >= 0 : true
 
   return (
     <motion.div
@@ -29,23 +46,23 @@ export function OverviewStats({ cashBalance, balanceLoading }: OverviewStatsProp
             <CardTitle className="text-[#F5EDD6]/60 text-[13px] font-inter font-medium tracking-[0.04em] uppercase">Total Balance</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            {balanceLoading ? (
+            {loading ? (
               <BalanceSkeleton />
-            ) : cashBalance !== null ? (
+            ) : stats ? (
               <>
                 <div className="text-3xl font-jetbrains-mono font-medium text-[#F5EDD6]">
-                  <AnimatedCounter value={cashBalance} prefix="$" decimals={2} />
+                  <AnimatedCounter value={stats.cashBalance} prefix="$" decimals={2} />
                 </div>
-                <div className="text-[#00FF88] text-sm mt-2 flex items-center gap-1.5 font-medium">
-                  <TrendingUp className="w-4 h-4" />
-                  {cashBalance >= 100000 ? `+${((cashBalance - 100000) / 100000 * 100).toFixed(1)}%` : `-${((100000 - cashBalance) / 100000 * 100).toFixed(1)}%`} vs start
+                <div className={`text-sm mt-2 flex items-center gap-1.5 font-medium ${allTimePositive ? "text-[#00FF88]" : "text-[#E8602C]"}`}>
+                  {allTimePositive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                  {allTimePositive ? "+" : ""}{stats.allTimePct.toFixed(1)}% vs start
                 </div>
               </>
             ) : (
               <div className="text-[#F5EDD6]/40 text-sm font-inter">Unable to load balance</div>
             )}
             <div className="absolute bottom-0 right-0 p-4 opacity-50 mix-blend-screen">
-              <MiniSparkline up={cashBalance !== null ? cashBalance >= 100000 : true} />
+              <MiniSparkline up={allTimePositive} />
             </div>
           </CardContent>
         </Card>
@@ -58,10 +75,16 @@ export function OverviewStats({ cashBalance, balanceLoading }: OverviewStatsProp
             <CardTitle className="text-[#F5EDD6]/60 text-[13px] font-inter font-medium tracking-[0.04em] uppercase">24h PNL</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="text-2xl font-jetbrains-mono font-medium text-[#00FF88]">
-              <AnimatedCounter value={1240.20} prefix="+$" decimals={2} />
-            </div>
-            <div className="text-[#F5EDD6]/60 text-sm mt-2 font-inter">Realized: +$450.00</div>
+            {loading ? <BalanceSkeleton /> : stats ? (
+              <>
+                <div className={`text-2xl font-jetbrains-mono font-medium ${pnlPositive ? "text-[#00FF88]" : "text-[#E8602C]"}`}>
+                  <AnimatedCounter value={Math.abs(stats.pnl24h)} prefix={pnlPositive ? "+$" : "-$"} decimals={2} />
+                </div>
+                <div className="text-[#F5EDD6]/60 text-sm mt-2 font-inter">
+                  Realized: {stats.pnlRealized >= 0 ? "+" : ""}${Math.abs(stats.pnlRealized).toFixed(2)}
+                </div>
+              </>
+            ) : <div className="text-[#F5EDD6]/40 text-sm">—</div>}
           </CardContent>
         </Card>
       </motion.div>
@@ -73,17 +96,21 @@ export function OverviewStats({ cashBalance, balanceLoading }: OverviewStatsProp
             <CardTitle className="text-[#F5EDD6]/60 text-[13px] font-inter font-medium tracking-[0.04em] uppercase">Margin Used</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="text-2xl font-jetbrains-mono font-medium text-[#F5EDD6]">
-              <AnimatedCounter value={15.4} suffix="%" decimals={1} />
-            </div>
-            <div className="w-full bg-white/10 h-1.5 mt-4 rounded-full overflow-hidden relative">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: '15.4%' }}
-                transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-                className="bg-[#E8602C] h-full absolute left-0 top-0"
-              />
-            </div>
+            {loading ? <BalanceSkeleton /> : stats ? (
+              <>
+                <div className="text-2xl font-jetbrains-mono font-medium text-[#F5EDD6]">
+                  <AnimatedCounter value={stats.marginUsed} suffix="%" decimals={1} />
+                </div>
+                <div className="w-full bg-white/10 h-1.5 mt-4 rounded-full overflow-hidden relative">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${stats.marginUsed}%` }}
+                    transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                    className="bg-[#E8602C] h-full absolute left-0 top-0"
+                  />
+                </div>
+              </>
+            ) : <div className="text-[#F5EDD6]/40 text-sm">—</div>}
           </CardContent>
         </Card>
       </motion.div>
