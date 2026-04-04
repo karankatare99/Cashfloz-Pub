@@ -72,7 +72,7 @@ export function Navbar() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-8 text-[13px] font-inter font-medium uppercase tracking-[0.04em]">
-          {["Markets", "Trade", "Dashboard", "Pro", "Learn"].map((item) => (
+          {["Markets", "Trade", "Dashboard", "Learn"].map((item) => (
             <Link
               key={item}
               href={`/${item.toLowerCase()}`}

@@ -6,6 +6,7 @@ import { LiveTicker } from "../components/layout/LiveTicker"
 import { Button } from "../components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { LineChart, Zap, Waves, ShieldCheck, Globe2, Clock, ArrowRight } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 function Hero3DCard() {
   const x = useMotionValue(0)
@@ -73,6 +74,7 @@ function StatItem({ value, label }: { value: string; label: string }) {
 }
 
 export default function LandingPage() {
+  const router = useRouter()
   const features = [
     { icon: LineChart, title: "Real-Time Charts", desc: "True tick-level data with 0 latency for serious technical analysis." },
     { icon: Zap, title: "Smart Order Routing", desc: "Execute seamlessly across fragmented liquidity pools." },
@@ -104,10 +106,10 @@ export default function LandingPage() {
               Cashfloz is the professional multi-asset trading platform built for retail and institutional traders. Real-time charts, deep order books, and advanced execution tools.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="buy" size="lg" className="w-full sm:w-auto font-syne uppercase tracking-wider text-sm">
+              <Button onClick={() => router.push("/trade")} variant="buy" size="lg" className="w-full sm:w-auto font-syne uppercase tracking-wider text-sm">
                 Start Trading <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
-              <Button variant="outline" size="lg" className="w-full sm:w-auto font-syne uppercase tracking-wider text-sm">
+              <Button onClick={() => router.push("/markets")} variant="outline" size="lg" className="w-full sm:w-auto font-syne uppercase tracking-wider text-sm">
                 View Markets
               </Button>
             </div>
