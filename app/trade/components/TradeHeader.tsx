@@ -23,8 +23,6 @@ export function TradeHeader() {
         <div className="h-6 w-[1px] bg-white/[0.1]"></div>
         <nav className="flex gap-6 font-inter text-[13px] font-medium uppercase tracking-wide">
           <span className="text-[#E8602C] border-b-2 border-[#E8602C] pb-[21px] pt-5 cursor-pointer">Spot</span>
-          <span className="text-[#F5EDD6]/50 pb-[21px] pt-5 cursor-pointer hover:text-[#F5EDD6] transition-colors">Margin</span>
-          <span className="text-[#F5EDD6]/50 pb-[21px] pt-5 cursor-pointer hover:text-[#F5EDD6] transition-colors">Futures</span>
         </nav>
       </div>
       <div className="flex items-center gap-4">

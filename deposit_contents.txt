@@ -1,0 +1,498 @@
+--- FILE: /home/comp/cashfloz/app/deposit/page.tsx ---
+"use client"
+
+import React, { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import axios from "axios"
+import { CreditCard, Landmark, Loader2, Wallet } from "lucide-react"
+
+// Component Imports
+import { Navbar } from "../../components/layout/Navbar" // Adjust path as needed
+import { CryptoTab } from "./components/CryptoTab"
+import { CardTab } from "./components/CardTab"
+import { BankTab } from "./components/BankTab"
+import { SuccessScreen } from "./components/SuccessScreen"
+
+type TabType = "crypto" | "card" | "bank"
+
+const TABS: { id: TabType; label: string; icon: React.ElementType }[] = [
+  { id: "crypto", label: "Crypto", icon: Wallet },
+  { id: "card", label: "Card", icon: CreditCard },
+  { id: "bank", label: "Bank Transfer", icon: Landmark },
+]
+
+export default function DepositPage() {
+  const [activeTab, setActiveTab] = useState<TabType>("crypto")
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  
+  // Crypto State
+  const [coin, setCoin] = useState("BTC")
+  const [network, setNetwork] = useState("ERC-20")
+  
+  // Card State
+  const [cardNumber, setCardNumber] = useState("")
+  const [cardAmount, setCardAmount] = useState<number | "">("")
+
+  // Handlers
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\D/g, "")
+    const formatted = val.match(/.{1,4}/g)?.join(" ") || val
+    setCardNumber(formatted.substring(0, 19))
+  }
+
+  const handleSubmit = async () => {
+    setLoading(true)
+    const amountToDeposit = activeTab === "card" ? Number(cardAmount) : 500
+
+    // Fake 2-second delay + API Call
+    setTimeout(async () => {
+      try {
+        await axios.patch("/api/user/balance", { amount: amountToDeposit })
+      } catch (e) {
+        // Silent fail as requested for portfolio demo
+      }
+      setLoading(false)
+      setSuccess(true)
+    }, 2000)
+  }
+
+  const resetForm = () => {
+    setSuccess(false)
+    setCardNumber("")
+    setCardAmount("")
+  }
+
+  return (
+    <div className="min-h-screen bg-[#0A0A0F] text-[#F5EDD6] selection:bg-[#E8602C]/30 selection:text-white font-inter antialiased flex flex-col">
+      <Navbar />
+
+      <main className="flex-1 flex flex-col items-center justify-center pt-24 pb-12 px-6">
+        <AnimatePresence mode="wait">
+          {!success ? (
+            <motion.div
+              key="form"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="w-full max-w-lg"
+            >
+              <div className="mb-8 flex items-center justify-between">
+                <div>
+                  <h1 className="font-space-grotesk text-3xl font-bold tracking-tight mb-2">Fund Account</h1>
+                  <p className="text-[#F5EDD6]/50 text-sm">Add funds securely to your Cashfloz portfolio.</p>
+                </div>
+              </div>
+
+              <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl backdrop-blur-xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+                {/* Tabs Header */}
+                <div className="flex border-b border-white/[0.06] relative">
+                  {TABS.map((tab) => {
+                    const isActive = activeTab === tab.id
+                    const Icon = tab.icon
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex-1 py-4 flex items-center justify-center gap-2 text-sm font-medium transition-colors ${
+                          isActive ? "text-[#F5EDD6]" : "text-[#F5EDD6]/40 hover:text-[#F5EDD6]/70"
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
+                        {tab.label}
+                        {isActive && (
+                          <motion.div
+                            layoutId="tab-indicator"
+                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#E8602C]"
+                            initial={false}
+                            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                          />
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* Form Area */}
+                <div className="p-6 md:p-8">
+                  <AnimatePresence mode="wait">
+                    {activeTab === "crypto" && (
+                      <CryptoTab key="crypto" coin={coin} setCoin={setCoin} network={network} setNetwork={setNetwork} />
+                    )}
+                    {activeTab === "card" && (
+                      <CardTab key="card" cardNumber={cardNumber} handleCardNumberChange={handleCardNumberChange} cardAmount={cardAmount} setCardAmount={setCardAmount} />
+                    )}
+                    {activeTab === "bank" && <BankTab key="bank" />}
+                  </AnimatePresence>
+
+                  {/* Submit Button */}
+                  {activeTab !== "bank" && (
+                    <button
+                      onClick={handleSubmit}
+                      disabled={loading || (activeTab === 'card' && !cardAmount)}
+                      className="w-full mt-8 h-12 bg-[#E8602C] hover:bg-[#E8602C]/90 disabled:bg-white/[0.04] disabled:text-[#F5EDD6]/30 disabled:shadow-none text-[#0A0A0F] font-space-grotesk font-semibold text-[15px] uppercase tracking-wider rounded-xl transition-all shadow-[0_0_20px_rgba(232,96,44,0.15)] flex items-center justify-center disabled:cursor-not-allowed"
+                    >
+                      {loading ? (
+                        <Loader2 className="w-5 h-5 animate-spin text-[#0A0A0F]" />
+                      ) : (
+                        `Deposit ${activeTab === "card" ? (cardAmount ? `$${cardAmount}` : "") : coin}`
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            <SuccessScreen 
+              key="success" 
+              resetForm={resetForm} 
+              activeTab={activeTab} 
+              cardAmount={cardAmount} 
+            />
+          )}
+        </AnimatePresence>
+      </main>
+    </div>
+  )
+}
+
+--- FILE: /home/comp/cashfloz/app/deposit/components/SuccessScreen.tsx ---
+"use client"
+import React from "react"
+import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
+import { AnimatedCounter } from "./DepositUtilities"
+
+const DUMMY_BALANCE = 14500.20 // Starting fake balance for the success counter
+
+interface SuccessScreenProps {
+  resetForm: () => void;
+  activeTab: "crypto" | "card" | "bank";
+  cardAmount: number | "";
+}
+
+export function SuccessScreen({ resetForm, activeTab, cardAmount }: SuccessScreenProps) {
+  const router = useRouter()
+
+  return (
+    <motion.div
+      key="success"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      className="w-full max-w-md bg-white/[0.02] border border-white/[0.06] rounded-2xl backdrop-blur-xl p-10 flex flex-col items-center text-center shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+    >
+      <div className="relative w-24 h-24 mb-6 flex items-center justify-center">
+        <motion.div 
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.1, type: "spring", stiffness: 200, damping: 20 }}
+          className="absolute inset-0 bg-[#00FF88]/20 rounded-full"
+        />
+        
+        <svg className="w-12 h-12 text-[#00FF88] relative z-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <motion.path
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
+            d="M20 6L9 17l-5-5"
+          />
+        </svg>
+      </div>
+
+      <h2 className="font-space-grotesk text-3xl font-bold tracking-tight mb-3">Deposit Initiated</h2>
+      <p className="text-[#F5EDD6]/50 text-sm leading-relaxed mb-8">
+        Your funds will appear in your account within a few minutes depending on network conditions.
+      </p>
+
+      <div className="w-full bg-[#0A0A0F] border border-white/[0.06] rounded-xl p-5 mb-8">
+        <div className="text-[11px] font-inter uppercase tracking-wider text-[#F5EDD6]/40 mb-2">New Portfolio Balance</div>
+        <div className="text-3xl">
+          <AnimatedCounter 
+            from={DUMMY_BALANCE} 
+            to={DUMMY_BALANCE + (activeTab === 'card' ? Number(cardAmount) : 32000)} 
+          />
+        </div>
+      </div>
+
+      <div className="w-full space-y-3">
+        <button onClick={() => { router.push("/dashboard") }} className="w-full h-12 bg-white/[0.04] hover:bg-white/[0.08] text-[#F5EDD6] font-space-grotesk font-semibold text-[14px] rounded-xl transition-all border border-white/[0.06]">
+          Back to Dashboard
+        </button>
+        <button 
+          onClick={resetForm}
+          className="w-full h-12 text-[#E8602C] hover:text-[#E8602C]/80 font-space-grotesk font-semibold text-[14px] rounded-xl transition-all"
+        >
+          Make Another Deposit
+        </button>
+      </div>
+    </motion.div>
+  )
+}
+
+--- FILE: /home/comp/cashfloz/app/deposit/components/BankTab.tsx ---
+// Empty file"use client"
+import React from "react"
+import { motion } from "framer-motion"
+import { CopyButton } from "./DepositUtilities"
+
+export function BankTab() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="space-y-4"
+    >
+      <div className="bg-[#E8602C]/10 border border-[#E8602C]/20 rounded-xl p-4 mb-6">
+        <p className="text-[#E8602C] font-inter text-xs leading-relaxed">
+          Please transfer funds to the following bank account. Include your Reference ID in the transfer notes to ensure automated processing.
+        </p>
+      </div>
+
+      {[
+        { label: "Account Name", value: "Cashfloz Ltd" },
+        { label: "IBAN", value: "GB29 NWBK 6016 1331 9268 19" },
+        { label: "SWIFT / BIC", value: "NWBKGB2L" },
+        { label: "Reference ID", value: "CASH-8X92-PLQ" },
+      ].map((item, i) => (
+        <div key={i} className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-4 flex justify-between items-center group">
+          <div>
+            <div className="text-[#F5EDD6]/40 text-[11px] font-medium uppercase tracking-wider mb-1">{item.label}</div>
+            <div className="font-jetbrains-mono text-[14px] text-[#F5EDD6]/90">{item.value}</div>
+          </div>
+          <CopyButton text={item.value} />
+        </div>
+      ))}
+    </motion.div>
+  )
+}
+
+--- FILE: /home/comp/cashfloz/app/deposit/components/CardTab.tsx ---
+"use client"
+import React from "react"
+import { motion } from "framer-motion"
+
+const CARD_PRESETS = [100, 500, 1000, 5000]
+
+interface CardTabProps {
+  cardNumber: string;
+  handleCardNumberChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  cardAmount: number | "";
+  setCardAmount: (val: number | "") => void;
+}
+
+export function CardTab({ cardNumber, handleCardNumberChange, cardAmount, setCardAmount }: CardTabProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="space-y-6"
+    >
+      <div className="space-y-2">
+        <label className="text-[13px] text-[#F5EDD6]/60 font-medium">Card Number</label>
+        <input 
+          type="text" 
+          placeholder="0000 0000 0000 0000"
+          value={cardNumber}
+          onChange={handleCardNumberChange}
+          className="w-full h-12 px-4 bg-[#0A0A0F] border border-white/[0.08] rounded-xl font-jetbrains-mono text-[15px] focus:ring-1 focus:ring-[#E8602C] focus:border-[#E8602C] transition-all outline-none placeholder:text-[#F5EDD6]/20"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="text-[13px] text-[#F5EDD6]/60 font-medium">Expiry</label>
+          <input 
+            type="text" 
+            placeholder="MM/YY"
+            maxLength={5}
+            className="w-full h-12 px-4 bg-[#0A0A0F] border border-white/[0.08] rounded-xl font-jetbrains-mono text-[15px] focus:ring-1 focus:ring-[#E8602C] focus:border-[#E8602C] transition-all outline-none placeholder:text-[#F5EDD6]/20"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-[13px] text-[#F5EDD6]/60 font-medium">CVV</label>
+          <input 
+            type="password" 
+            placeholder="•••"
+            maxLength={4}
+            className="w-full h-12 px-4 bg-[#0A0A0F] border border-white/[0.08] rounded-xl font-jetbrains-mono text-[15px] focus:ring-1 focus:ring-[#E8602C] focus:border-[#E8602C] transition-all outline-none placeholder:text-[#F5EDD6]/20"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-[13px] text-[#F5EDD6]/60 font-medium">Cardholder Name</label>
+        <input 
+          type="text" 
+          placeholder="John Doe"
+          className="w-full h-12 px-4 bg-[#0A0A0F] border border-white/[0.08] rounded-xl font-inter text-[15px] focus:ring-1 focus:ring-[#E8602C] focus:border-[#E8602C] transition-all outline-none placeholder:text-[#F5EDD6]/20"
+        />
+      </div>
+
+      <div className="pt-4 border-t border-white/[0.06] space-y-4">
+        <div className="space-y-2">
+          <label className="text-[13px] text-[#F5EDD6]/60 font-medium">Amount (USD)</label>
+          <div className="relative group">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#F5EDD6]/40 font-jetbrains-mono">$</span>
+            <input 
+              type="number" 
+              placeholder="0.00"
+              value={cardAmount}
+              onChange={(e) => setCardAmount(Number(e.target.value) || "")}
+              className="w-full h-12 pl-8 pr-4 bg-[#0A0A0F] border border-white/[0.08] rounded-xl font-jetbrains-mono text-[15px] focus:ring-1 focus:ring-[#E8602C] focus:border-[#E8602C] transition-all outline-none placeholder:text-[#F5EDD6]/20"
+            />
+          </div>
+        </div>
+        
+        <div className="flex gap-2">
+          {CARD_PRESETS.map(amt => (
+            <button
+              key={amt}
+              onClick={() => setCardAmount(amt)}
+              className="flex-1 py-2 rounded-lg bg-white/[0.02] border border-white/[0.06] text-[#F5EDD6]/60 hover:text-[#F5EDD6] hover:bg-white/[0.05] transition-all font-jetbrains-mono text-xs"
+            >
+              ${amt}
+            </button>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+--- FILE: /home/comp/cashfloz/app/deposit/components/CryptoTab.tsx ---
+"use client"
+import React from "react"
+import { motion } from "framer-motion"
+import { ChevronDown } from "lucide-react"
+import { CopyButton } from "./DepositUtilities"
+
+const CRYPTO_COINS = ["BTC", "ETH", "USDT", "BNB"]
+const CRYPTO_NETWORKS = ["ERC-20", "BEP-20", "TRC-20"]
+
+interface CryptoTabProps {
+  coin: string;
+  setCoin: (val: string) => void;
+  network: string;
+  setNetwork: (val: string) => void;
+}
+
+export function CryptoTab({ coin, setCoin, network, setNetwork }: CryptoTabProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="space-y-6"
+    >
+      <div className="space-y-2">
+        <label className="text-[13px] text-[#F5EDD6]/60 font-medium">Select Coin</label>
+        <div className="relative group">
+          <select 
+            value={coin} 
+            onChange={(e) => setCoin(e.target.value)}
+            className="w-full h-12 px-4 appearance-none bg-[#0A0A0F] border border-white/[0.08] rounded-xl font-jetbrains-mono text-[15px] focus:ring-1 focus:ring-[#E8602C] focus:border-[#E8602C] transition-all outline-none"
+          >
+            {CRYPTO_COINS.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F5EDD6]/40 pointer-events-none" />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-[13px] text-[#F5EDD6]/60 font-medium">Select Network</label>
+        <div className="flex gap-2">
+          {CRYPTO_NETWORKS.map(net => (
+            <button
+              key={net}
+              onClick={() => setNetwork(net)}
+              className={`flex-1 py-2.5 rounded-xl font-jetbrains-mono text-xs font-medium transition-all ${
+                network === net 
+                  ? "bg-[#E8602C]/10 border border-[#E8602C]/50 text-[#E8602C]" 
+                  : "bg-white/[0.02] border border-white/[0.06] text-[#F5EDD6]/50 hover:text-[#F5EDD6] hover:bg-white/[0.04]"
+              }`}
+            >
+              {net}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* QR & Address */}
+      <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 flex flex-col items-center gap-6 mt-8 relative overflow-hidden">
+        <div className="w-48 h-48 bg-white/[0.02] border border-white/[0.06] rounded-xl flex items-center justify-center relative shadow-[inset_0_0_20px_rgba(255,255,255,0.02)]">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:8px_8px] rounded-xl"></div>
+          <div className="w-12 h-12 rounded bg-[#E8602C] flex items-center justify-center text-[#0A0A0F] font-space-grotesk font-bold text-2xl skew-x-[-10deg] shadow-[0_0_30px_rgba(232,96,44,0.4)] z-10">C</div>
+        </div>
+        
+        <div className="w-full space-y-2">
+          <label className="text-[11px] text-[#F5EDD6]/40 font-medium uppercase tracking-wider pl-1">Deposit Address</label>
+          <div className="flex items-center gap-2 w-full">
+            <div className="flex-1 h-12 bg-[#0A0A0F] border border-white/[0.08] rounded-xl px-4 flex items-center overflow-hidden">
+               <span className="font-jetbrains-mono text-[13px] text-[#F5EDD6]/80 truncate">0x1783ea8e4f9b2c3d...f4a9b3c2</span>
+            </div>
+            <CopyButton text="0xDummyWalletAddressForCashfloz" />
+          </div>
+        </div>
+        
+        <p className="text-[11px] font-inter text-[#F5EDD6]/40 mt-2 text-center">
+          Minimum deposit: 0.001 {coin} • 1 network confirmation required
+        </p>
+      </div>
+    </motion.div>
+  )
+}
+
+--- FILE: /home/comp/cashfloz/app/deposit/components/DepositUtilities.tsx ---
+"use client"
+import React, { useState, useEffect, useRef } from "react"
+import { animate } from "framer-motion"
+import { Copy, Check } from "lucide-react"
+
+export function AnimatedCounter({ from, to }: { from: number; to: number }) {
+  const nodeRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    const node = nodeRef.current
+    if (!node) return
+    const controls = animate(from, to, {
+      duration: 2,
+      ease: [0.16, 1, 0.3, 1], // Custom spring-like easing
+      onUpdate(value) {
+        node.textContent = value.toLocaleString("en-US", {
+          style: "currency",
+          currency: "USD",
+        })
+      },
+    })
+    return () => controls.stop()
+  }, [from, to])
+
+  return (
+    <span ref={nodeRef} className="font-jetbrains-mono tracking-tight text-[#00FF88]">
+      {from.toLocaleString("en-US", { style: "currency", currency: "USD" })}
+    </span>
+  )
+}
+
+export function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="p-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-all text-[#F5EDD6]/60 hover:text-[#F5EDD6]"
+    >
+      {copied ? <Check className="w-4 h-4 text-[#00FF88]" /> : <Copy className="w-4 h-4" />}
+    </button>
+  )
+}
