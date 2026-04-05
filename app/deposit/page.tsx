@@ -24,6 +24,9 @@ export default function DepositPage() {
   const [activeTab, setActiveTab] = useState<TabType>("crypto")
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+
+  // Balance State
+  const [balanceBeforeDeposit, setBalanceBeforeDeposit] = useState(0)
   
   // Crypto State
   const [coin, setCoin] = useState("BTC")
@@ -44,13 +47,13 @@ export default function DepositPage() {
     setLoading(true)
     const amountToDeposit = activeTab === "card" ? Number(cardAmount) : 500
 
-    // Fake 2-second delay + API Call
+    const { data } = await axios.get("/api/user/balance").catch(() => ({ data: { cashBalance: 0 } }))
+    setBalanceBeforeDeposit(data.cashBalance)
+
     setTimeout(async () => {
       try {
         await axios.patch("/api/user/balance", { amount: amountToDeposit })
-      } catch (e) {
-        // Silent fail as requested for portfolio demo
-      }
+      } catch {}
       setLoading(false)
       setSuccess(true)
     }, 2000)
@@ -143,11 +146,12 @@ export default function DepositPage() {
               </div>
             </motion.div>
           ) : (
-            <SuccessScreen 
-              key="success" 
-              resetForm={resetForm} 
-              activeTab={activeTab} 
-              cardAmount={cardAmount} 
+            <SuccessScreen
+              key="success"
+              resetForm={resetForm}
+              activeTab={activeTab}
+              cardAmount={cardAmount}
+              balanceBeforeDeposit={balanceBeforeDeposit}
             />
           )}
         </AnimatePresence>

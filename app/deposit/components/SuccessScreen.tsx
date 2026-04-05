@@ -1,19 +1,31 @@
 "use client"
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { useRouter } from "next/navigation"
 import { AnimatedCounter } from "./DepositUtilities"
-
-const DUMMY_BALANCE = 14500.20 // Starting fake balance for the success counter
+import axios from "axios"
 
 interface SuccessScreenProps {
-  resetForm: () => void;
-  activeTab: "crypto" | "card" | "bank";
-  cardAmount: number | "";
+  resetForm: () => void
+  activeTab: "crypto" | "card" | "bank"
+  cardAmount: number | ""
+  balanceBeforeDeposit: number
 }
 
-export function SuccessScreen({ resetForm, activeTab, cardAmount }: SuccessScreenProps) {
+export function SuccessScreen({ resetForm, activeTab, cardAmount, balanceBeforeDeposit }: SuccessScreenProps) {
   const router = useRouter()
+  const [newBalance, setNewBalance] = useState<number | null>(null)
+
+  useEffect(() => {
+    axios
+      .get("/api/user/balance")
+      .then((res) => setNewBalance(res.data.cashBalance))
+      .catch(() => {
+        // Fallback: estimate from old balance + deposit amount
+        const deposited = activeTab === "card" ? Number(cardAmount) : 46500
+        setNewBalance(balanceBeforeDeposit + deposited)
+      })
+  }, [])
 
   return (
     <motion.div
@@ -24,13 +36,12 @@ export function SuccessScreen({ resetForm, activeTab, cardAmount }: SuccessScree
       className="w-full max-w-md bg-white/[0.02] border border-white/[0.06] rounded-2xl backdrop-blur-xl p-10 flex flex-col items-center text-center shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
     >
       <div className="relative w-24 h-24 mb-6 flex items-center justify-center">
-        <motion.div 
+        <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.1, type: "spring", stiffness: 200, damping: 20 }}
           className="absolute inset-0 bg-[#00FF88]/20 rounded-full"
         />
-        
         <svg className="w-12 h-12 text-[#00FF88] relative z-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
           <motion.path
             initial={{ pathLength: 0 }}
@@ -49,18 +60,22 @@ export function SuccessScreen({ resetForm, activeTab, cardAmount }: SuccessScree
       <div className="w-full bg-[#0A0A0F] border border-white/[0.06] rounded-xl p-5 mb-8">
         <div className="text-[11px] font-inter uppercase tracking-wider text-[#F5EDD6]/40 mb-2">New Portfolio Balance</div>
         <div className="text-3xl">
-          <AnimatedCounter 
-            from={DUMMY_BALANCE} 
-            to={DUMMY_BALANCE + (activeTab === 'card' ? Number(cardAmount) : 32000)} 
-          />
+          {newBalance !== null ? (
+            <AnimatedCounter from={balanceBeforeDeposit} to={newBalance} />
+          ) : (
+            <span className="font-jetbrains-mono text-[#00FF88] animate-pulse">Loading...</span>
+          )}
         </div>
       </div>
 
       <div className="w-full space-y-3">
-        <button onClick={() => { router.push("/dashboard") }} className="w-full h-12 bg-white/[0.04] hover:bg-white/[0.08] text-[#F5EDD6] font-space-grotesk font-semibold text-[14px] rounded-xl transition-all border border-white/[0.06]">
+        <button
+          onClick={() => router.push("/dashboard")}
+          className="w-full h-12 bg-white/[0.04] hover:bg-white/[0.08] text-[#F5EDD6] font-space-grotesk font-semibold text-[14px] rounded-xl transition-all border border-white/[0.06]"
+        >
           Back to Dashboard
         </button>
-        <button 
+        <button
           onClick={resetForm}
           className="w-full h-12 text-[#E8602C] hover:text-[#E8602C]/80 font-space-grotesk font-semibold text-[14px] rounded-xl transition-all"
         >
