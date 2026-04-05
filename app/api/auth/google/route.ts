@@ -10,7 +10,7 @@ export async function GET() {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
-    maxAge: 60 * 10, // 10 minutes — enough to complete the OAuth flow
+    maxAge: 60 * 10, 
     path: "/",
   })
 

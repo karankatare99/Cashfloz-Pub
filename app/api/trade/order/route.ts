@@ -23,10 +23,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "side, type and amount are required." }, { status: 400 })
     }
 
-    // Simulate a tiny execution delay feel
+    
     const executionPrice = parseFloat(price ?? 64231.00)
     const total          = parseFloat((executionPrice * parseFloat(amount)).toFixed(2))
-    const fee            = parseFloat((total * 0.0005).toFixed(2)) // 0.05% maker
+    const fee            = parseFloat((total * 0.0005).toFixed(2)) 
 
     return NextResponse.json({
       success:  true,

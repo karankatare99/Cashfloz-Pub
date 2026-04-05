@@ -11,7 +11,7 @@ export function AnimatedCounter({ from, to }: { from: number; to: number }) {
     if (!node) return
     const controls = animate(from, to, {
       duration: 2,
-      ease: [0.16, 1, 0.3, 1], // Custom spring-like easing
+      ease: [0.16, 1, 0.3, 1], 
       onUpdate(value) {
         node.textContent = value.toLocaleString("en-US", {
           style: "currency",

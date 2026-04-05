@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 const MID_PRICE = 64231.00
 
 export async function GET() {
-  // Slight mid-price drift on each call
+  
   const mid = MID_PRICE + (Math.random() - 0.5) * 20
 
   const asks = Array.from({ length: 15 }, (_, i) => {

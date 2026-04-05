@@ -44,7 +44,7 @@ export function OrderBook() {
         <span>Size</span><span>Price (USD)</span>
       </div>
 
-      {/* Asks */}
+      {}
       <div className="flex-1 overflow-hidden flex flex-col justify-end pt-2">
         {asks.map((ask, i) => (
           <div key={`ask-${i}`} className="relative flex justify-between px-4 py-1.5 hover:bg-white/[0.03] transition-colors cursor-pointer">
@@ -55,7 +55,7 @@ export function OrderBook() {
         ))}
       </div>
 
-      {/* Spread */}
+      {}
       <div className="py-3 px-4 border-y border-white/[0.06] my-2 bg-white/[0.01] text-center flex items-center justify-center gap-4 shadow-[inset_0_0_20px_rgba(0,0,0,0.2)]">
         <span className="text-xl font-bold text-[#00FF88] tracking-tight">
           {data ? data.midPrice.toLocaleString("en-US", { minimumFractionDigits: 2 }) : "—"}
@@ -66,7 +66,7 @@ export function OrderBook() {
         </span>
       </div>
 
-      {/* Bids */}
+      {}
       <div className="flex-1 overflow-hidden pb-2">
         {bids.map((bid, i) => (
           <div key={`bid-${i}`} className="relative flex justify-between px-4 py-1.5 hover:bg-white/[0.03] transition-colors cursor-pointer">
@@ -77,7 +77,7 @@ export function OrderBook() {
         ))}
       </div>
 
-      {/* Grouping */}
+      {}
       <div className="mt-auto border-t border-white/[0.06] px-4 py-3 flex justify-between bg-white/[0.01] text-[11px] font-inter font-medium">
         <span className="text-[#F5EDD6]/40 cursor-pointer hover:text-[#F5EDD6] transition-colors">Grouping: {grouping}</span>
         <span className="text-[#F5EDD6]/40 flex gap-3">

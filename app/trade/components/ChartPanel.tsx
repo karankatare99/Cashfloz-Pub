@@ -23,7 +23,7 @@ export function ChartPanel() {
   const [chartType, setChartType]   = useState("Candles")
   const [ticker, setTicker]         = useState<Ticker | null>(null)
 
-  // Fetch ticker every 3s
+  
   const fetchTicker = useCallback(() => {
     axios.get("/api/trade/ticker").then((res) => setTicker(res.data)).catch(() => {})
   }, [])
@@ -34,7 +34,7 @@ export function ChartPanel() {
     return () => clearInterval(interval)
   }, [fetchTicker])
 
-  // Build/rebuild chart when timeframe or type changes
+  
   useEffect(() => {
     if (!chartContainerRef.current) return
     const container = chartContainerRef.current
@@ -107,7 +107,7 @@ export function ChartPanel() {
 
   return (
     <motion.div variants={panelVariants} className="flex-1 flex flex-col h-full bg-[#0A0A0F] relative border-r border-white/[0.06]">
-      {/* Header */}
+      {}
       <div className="h-16 border-b border-white/[0.06] flex items-center justify-between px-6 bg-white/[0.01]">
         <div className="flex items-center gap-8">
           <div className="flex items-center gap-4">
@@ -137,7 +137,7 @@ export function ChartPanel() {
         </div>
       </div>
 
-      {/* Toolbar */}
+      {}
       <div className="h-12 border-b border-white/[0.04] items-center px-6 justify-between bg-transparent hidden sm:flex">
         <div className="flex gap-1">
           {["1m", "5m", "15m", "1H", "4H", "1D"].map((res) => (

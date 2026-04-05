@@ -5,7 +5,7 @@ import { Card, CardTitle, CardContent } from "../../../components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "../../../components/ui/tabs"
 import { staggerItem } from "./animations"
 
-// Define stroke paths with matching command structures for smooth morphing
+
 const graphData: Record<string, string> = {
   "1W": "M0 180 Q 100 170 200 150 T 400 160 T 600 120 L 800 130 L 1000 90",
   "1M": "M0 150 Q 100 100 200 130 T 400 80 T 600 30 L 800 60 L 1000 0",
@@ -17,9 +17,9 @@ const graphData: Record<string, string> = {
 export function PerformancePanel() {
   const [filter, setFilter] = useState("1M")
 
-  // Dynamically generate the path and its corresponding filled area
+  
   const strokePath = graphData[filter]
-  // substring(1) removes the "M" so we can connect the bottom corners to the start/end
+  
   const fillPath = `M0 200 L${strokePath.substring(1)} L1000 200 Z`
 
   return (
@@ -48,14 +48,14 @@ export function PerformancePanel() {
               <stop offset="100%" stopColor="#00FF88" stopOpacity="0" />
             </linearGradient>
             
-            {/* Filled Area below the line */}
+            {}
             <motion.path 
               animate={{ d: fillPath }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
               fill="url(#pnlGrad)" 
             />
             
-            {/* Stroke Line */}
+            {}
             <motion.path 
               animate={{ d: strokePath }}
               transition={{ duration: 0.5, ease: "easeInOut" }}

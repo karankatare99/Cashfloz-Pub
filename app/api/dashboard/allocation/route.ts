@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
         { label: "Commodities", color: "bg-[#F7931A]",                          pct: 20, display: "20%" },
         { label: "Cash",        color: "bg-transparent border border-[#F5EDD6]/30", pct: 15, display: "15%" },
       ],
-      // For the donut chart conic-gradient stops
+      
       donut: "conic-gradient(#00FF88 0% 45%, #E8602C 45% 65%, #F7931A 65% 85%, rgba(255,255,255,0.1) 85% 100%)",
       totalLabel: "$104k",
     })

@@ -10,7 +10,7 @@ export const generateCandleData = () => {
     const low = Math.min(open, close) - Math.random() * 500
     data.push({ time: time as UTCTimestamp, open, high, low, close })
     open = close
-    time += 3600 // 1 hour
+    time += 3600 
   }
   return data
 }

@@ -39,7 +39,7 @@ export function OverviewStats() {
       animate="show"
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
     >
-      {/* Total Balance */}
+      {}
       <motion.div variants={staggerItem}>
         <Card className="bg-white/[0.02] border border-white/[0.06] rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all duration-200 ease-out overflow-hidden relative p-6">
           <CardHeader className="p-0 pb-3">
@@ -68,7 +68,7 @@ export function OverviewStats() {
         </Card>
       </motion.div>
 
-      {/* 24h PNL */}
+      {}
       <motion.div variants={staggerItem}>
         <Card className="bg-white/[0.02] border border-white/[0.06] rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all duration-200 ease-out p-6">
           <CardHeader className="p-0 pb-3">
@@ -89,7 +89,7 @@ export function OverviewStats() {
         </Card>
       </motion.div>
 
-      {/* Margin Used */}
+      {}
       <motion.div variants={staggerItem}>
         <Card className="bg-white/[0.02] border border-white/[0.06] rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all duration-200 ease-out p-6">
           <CardHeader className="p-0 pb-3">
@@ -115,7 +115,7 @@ export function OverviewStats() {
         </Card>
       </motion.div>
 
-      {/* Deposit */}
+      {}
       <motion.div onClick={() => router.push("/deposit")} variants={staggerItem} className="h-full">
         <Card className="h-full bg-[#E8602C]/10 border border-[#E8602C]/30 rounded-2xl cursor-pointer hover:bg-[#E8602C]/20 hover:scale-[1.02] hover:shadow-[0_0_24px_rgba(232,96,44,0.25)] transition-all duration-200 ease-out flex items-center justify-center p-6 min-h-[140px] group">
           <div className="flex items-center gap-3 text-[#E8602C] font-inter text-[13px] tracking-[0.04em] font-medium uppercase group-active:scale-95 transition-transform">

@@ -37,7 +37,7 @@ export function AllocationPanel() {
           <PieChart className="w-5 h-5 text-[#F5EDD6]/40" />
         </CardHeader>
         <CardContent className="p-0 flex flex-col items-center">
-          {/* Donut */}
+          {}
           <div
             className="relative w-40 h-40 mx-auto mt-6 rounded-full"
             style={{

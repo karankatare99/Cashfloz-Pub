@@ -71,6 +71,10 @@ export default function LoginPage() {
     }
   }
 
+  const onGoogleLogin = () => {
+    window.location.href = "/api/auth/google"
+  }
+
   return (
     <div className="min-h-screen bg-[#0A0A0F] flex flex-col items-center justify-center font-inter px-6 relative overflow-hidden selection:bg-[#E8602C]/30 selection:text-white">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#E8602C]/[0.03] rounded-full blur-[120px] pointer-events-none" />
@@ -93,9 +97,9 @@ export default function LoginPage() {
           </CardHeader>
 
           <CardContent className="px-8 pb-10 space-y-8">
-            {/* Social Logins */}
+            {}
             <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" className="w-full h-12 bg-white/[0.03] border-white/[0.08] text-[#F5EDD6]/80 hover:text-[#F5EDD6] hover:bg-white/[0.06] hover:border-white/[0.15] rounded-xl transition-all duration-200">
+              <Button onClick={onGoogleLogin} variant="outline" className="w-full h-12 bg-white/[0.03] border-white/[0.08] text-[#F5EDD6]/80 hover:text-[#F5EDD6] hover:bg-white/[0.06] hover:border-white/[0.15] rounded-xl transition-all duration-200">
                 Google
               </Button>
               <Button variant="outline" className="w-full h-12 bg-white/[0.03] border-white/[0.08] text-[#F5EDD6]/80 hover:text-[#F5EDD6] hover:bg-white/[0.06] hover:border-white/[0.15] rounded-xl transition-all duration-200">

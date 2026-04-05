@@ -36,7 +36,7 @@ export function HeroSection() {
         </motion.div>
       </div>
       
-      {/* Background Grid Lines */}
+      {}
       <div className="absolute inset-0 pointer-events-none z-[-1]" style={{ backgroundImage: "linear-gradient(to right, #1F2937 1px, transparent 1px), linear-gradient(to bottom, #1F2937 1px, transparent 1px)", backgroundSize: "4rem 4rem", opacity: 0.2 }}></div>
     </section>
   )

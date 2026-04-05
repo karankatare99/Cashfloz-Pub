@@ -3,9 +3,9 @@
 import React from "react"
 import { motion, Variants } from "framer-motion"
 import Link from "next/link"
-import { Navbar } from "../components/layout/Navbar" // Adjust path if needed depending on your specific folder structure
+import { Navbar } from "../components/layout/Navbar" 
 
-// --- Animation Variants ---
+
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
@@ -32,7 +32,7 @@ export default function NotFound() {
       <Navbar />
 
       <main className="flex-1 flex flex-col items-center justify-center relative px-6 overflow-hidden">
-        {/* Ambient Background Glow Orb */}
+        {}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-[#E8602C]/[0.04] blur-[120px] rounded-full pointer-events-none z-0" />
 
         <motion.div
@@ -41,13 +41,13 @@ export default function NotFound() {
           animate="show"
           className="relative z-10 flex flex-col items-center justify-center w-full max-w-2xl"
         >
-          {/* Glitching 404 Display */}
+          {}
           <motion.div variants={itemVariants} className="relative mb-4 flex items-center justify-center">
-            {/* Background Ember Shadow Layer */}
+            {}
             <span className="absolute top-2 left-3 md:top-3 md:left-4 text-[140px] md:text-[180px] font-jetbrains-mono font-bold text-[#E8602C]/20 select-none tracking-tighter">
               404
             </span>
-            {/* Foreground Animated White Layer */}
+            {}
             <motion.span
               animate={{ opacity: [1, 0.7, 1] }}
               transition={{ duration: 2, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }}
@@ -57,7 +57,7 @@ export default function NotFound() {
             </motion.span>
           </motion.div>
 
-          {/* Text Content */}
+          {}
           <motion.h1 
             variants={itemVariants} 
             className="font-space-grotesk text-3xl md:text-4xl font-bold mb-4 text-center tracking-tight"
@@ -72,7 +72,7 @@ export default function NotFound() {
             The page you're looking for doesn't exist or has been moved. Check the URL or head back to safety.
           </motion.p>
 
-          {/* Fake Terminal Output */}
+          {}
           <motion.div 
             variants={itemVariants} 
             className="font-jetbrains-mono text-[13px] text-[#F5EDD6]/40 mb-10 text-center bg-white/[0.02] border border-white/[0.06] px-5 py-2.5 rounded-lg backdrop-blur-md shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
@@ -80,7 +80,7 @@ export default function NotFound() {
             &gt; ERROR 404: route '/unknown-path' not found
           </motion.div>
 
-          {/* CTAs */}
+          {}
           <motion.div 
             variants={itemVariants} 
             className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-8"
@@ -99,7 +99,7 @@ export default function NotFound() {
             </Link>
           </motion.div>
 
-          {/* Inline Links */}
+          {}
           <motion.div 
             variants={itemVariants} 
             className="font-inter text-sm text-[#F5EDD6]/40 flex items-center gap-2"

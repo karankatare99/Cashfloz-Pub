@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   const state = searchParams.get("state")
   const storedState = req.cookies.get(OAUTH_STATE_COOKIE)?.value
 
-  // ─── CSRF check ─────────────────────────────────────────────────────────────
+  
   if (!state || !storedState || state !== storedState) {
     return NextResponse.redirect(
       `${process.env.NEXTAUTH_URL}/login?error=invalid_state`
@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // ─── Exchange code for tokens ──────────────────────────────────────────────
+    
     const tokens = await exchangeGoogleCode(code)
     const googleUser = await getGoogleUser(tokens.access_token)
 
@@ -39,16 +39,16 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    // ─── Upsert user ───────────────────────────────────────────────────────────
-    // If they've signed in with Google before → update their avatar
-    // If they're new → create user + portfolio
+    
+    
+    
     let user = await prisma.user.findUnique({
       where: { email: googleUser.email },
       select: { id: true, email: true, username: true },
     })
 
     if (!user) {
-      // Derive a username from their Google name, ensure it's unique
+      
       const baseUsername = googleUser.given_name
         .toLowerCase()
         .replace(/[^a-z0-9]/g, "")
@@ -66,21 +66,21 @@ export async function GET(req: NextRequest) {
         data: {
           email: googleUser.email,
           username,
-          passwordHash: "", // no password for OAuth users
+          passwordHash: "", 
           avatarUrl: googleUser.picture,
           portfolio: { create: { cashBalance: 100000 } },
         },
         select: { id: true, email: true, username: true },
       })
     } else {
-      // Update avatar in case it changed
+      
       await prisma.user.update({
         where: { id: user.id },
         data: { avatarUrl: googleUser.picture },
       })
     }
 
-    // ─── Create session ────────────────────────────────────────────────────────
+    
     const token = generateSessionToken()
     const expiresAt = sessionExpiryDate()
 
@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
       data: { userId: user.id, token, expiresAt },
     })
 
-    // ─── Redirect to dashboard ────────────────────────────────────────────────
+    
     const res = NextResponse.redirect(`${process.env.NEXTAUTH_URL}/dashboard`)
 
     res.cookies.delete(OAUTH_STATE_COOKIE)

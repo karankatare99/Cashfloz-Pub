@@ -19,18 +19,18 @@ export default function MarketsPage() {
       const { data } = await axios.get("/api/markets")
       setMarkets(data.markets)
     } catch {
-      // keep stale data on error — don't blank the table
+      
     } finally {
       setLoading(false)
     }
   }, [])
 
-  // Initial fetch
+  
   useEffect(() => {
     fetchMarkets()
   }, [fetchMarkets])
 
-  // Refresh every 3 seconds to simulate live prices
+  
   useEffect(() => {
     const interval = setInterval(fetchMarkets, 3000)
     return () => clearInterval(interval)

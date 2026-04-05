@@ -53,7 +53,7 @@ export default function RegisterPage() {
   const onSignupHandler = async () => {
     setError("")
 
-    // Basic client-side validation before hitting the server
+    
     if (!username || !email || !password) {
       setError("All fields are required.")
       return
@@ -66,7 +66,7 @@ export default function RegisterPage() {
     try {
       setLoading(true)
       await axios.post("/api/auth/register", { username, email, password })
-      // Registration sets the session cookie automatically — go straight to dashboard
+      
       router.push("/dashboard")
     } catch (err) {
       const axiosError = err as AxiosError<{ error: string }>
@@ -76,6 +76,10 @@ export default function RegisterPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const onGoogleRegister = () => {
+    window.location.href = "/api/auth/google"
   }
 
   return (
@@ -100,9 +104,9 @@ export default function RegisterPage() {
           </CardHeader>
 
           <CardContent className="px-8 pb-10 space-y-8">
-            {/* Social Logins */}
+            {}
             <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" className="w-full h-12 bg-white/[0.03] border-white/[0.08] text-[#F5EDD6]/80 hover:text-[#F5EDD6] hover:bg-white/[0.06] hover:border-white/[0.15] rounded-xl transition-all duration-200">
+              <Button onClick={onGoogleRegister} variant="outline" className="w-full h-12 bg-white/[0.03] border-white/[0.08] text-[#F5EDD6]/80 hover:text-[#F5EDD6] hover:bg-white/[0.06] hover:border-white/[0.15] rounded-xl transition-all duration-200">
                 Google
               </Button>
               <Button variant="outline" className="w-full h-12 bg-white/[0.03] border-white/[0.08] text-[#F5EDD6]/80 hover:text-[#F5EDD6] hover:bg-white/[0.06] hover:border-white/[0.15] rounded-xl transition-all duration-200">
@@ -147,7 +151,7 @@ export default function RegisterPage() {
                 />
               </div>
 
-              {/* Error message */}
+              {}
               {error && (
                 <motion.p
                   initial={{ opacity: 0, y: -4 }}

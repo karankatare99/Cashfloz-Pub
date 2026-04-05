@@ -3,7 +3,7 @@ import React from "react"
 import { Navbar } from "../components/layout/Navbar"
 import { LiveTicker } from "../components/layout/LiveTicker"
 
-// Component Imports
+
 import { HeroSection } from "./home-components/HeroSection"
 import { StatsSection } from "./home-components/StatsSection"
 import { FeaturesSection } from "./home-components/FeaturesSection"

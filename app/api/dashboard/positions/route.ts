@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
 
     const positions = DUMMY_POSITIONS.map((p) => {
       const size = parseFloat(p.size)
-      // Slightly randomize current price on each call for live feel
+      
       const livePrice = parseFloat(
         (p.currentPrice * (1 + (Math.random() - 0.5) * 0.004)).toFixed(2)
       )

@@ -25,14 +25,14 @@ const BASE_MARKETS = [
   { id: 22, name: "FTSE 100",   symbol: "ISF",    type: "Indices",     basePrice: 77.54,    volume: "8B",    marketCap: "-"     },
 ]
 
-// Simulate a realistic price tick — small random walk within ±2% of base
+
 function simulatePrice(basePrice: number): number {
   const maxSwing = basePrice * 0.02
   const swing = (Math.random() - 0.5) * 2 * maxSwing
   return parseFloat((basePrice + swing).toFixed(basePrice < 10 ? 4 : 2))
 }
 
-// Simulate a 24h change between -5% and +5%
+
 function simulateChange(): number {
   return parseFloat(((Math.random() - 0.5) * 10).toFixed(2))
 }

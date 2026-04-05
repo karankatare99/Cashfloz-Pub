@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    // Same error for wrong email or wrong password — no enumeration
+    
     if (!user || !verifyPassword(password, user.passwordHash)) {
       return NextResponse.json(
         { error: "Invalid email or password." },

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 
-// Timeframe → seconds per candle
+
 const TIMEFRAME_SECONDS: Record<string, number> = {
   "1m":  60,
   "5m":  300,
@@ -10,7 +10,7 @@ const TIMEFRAME_SECONDS: Record<string, number> = {
   "1D":  86400,
 }
 
-// Each timeframe has its own volatility feel
+
 const TIMEFRAME_VOLATILITY: Record<string, number> = {
   "1m":  80,
   "5m":  200,

@@ -6,10 +6,10 @@ const LOW_24H    = 62900.00
 const VOLUME_24H = "32.4B"
 
 export async function GET() {
-  // Simulate a live price tick within ±1% of base
+  
   const swing      = (Math.random() - 0.5) * 2 * BASE_PRICE * 0.01
   const price      = parseFloat((BASE_PRICE + swing).toFixed(2))
-  const change     = parseFloat((price - 62670.00).toFixed(2))   // vs 24h open
+  const change     = parseFloat((price - 62670.00).toFixed(2))   
   const changePct  = parseFloat(((change / 62670.00) * 100).toFixed(2))
 
   return NextResponse.json({

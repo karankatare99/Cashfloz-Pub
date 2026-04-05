@@ -21,7 +21,7 @@ export function SuccessScreen({ resetForm, activeTab, cardAmount, balanceBeforeD
       .get("/api/user/balance")
       .then((res) => setNewBalance(res.data.cashBalance))
       .catch(() => {
-        // Fallback: estimate from old balance + deposit amount
+        
         const deposited = activeTab === "card" ? Number(cardAmount) : 46500
         setNewBalance(balanceBeforeDeposit + deposited)
       })

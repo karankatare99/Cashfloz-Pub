@@ -55,7 +55,7 @@ export function CryptoTab({ coin, setCoin, network, setNetwork }: CryptoTabProps
         </div>
       </div>
 
-      {/* QR & Address */}
+      {}
       <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 flex flex-col items-center gap-6 mt-8 relative overflow-hidden">
         <div className="w-48 h-48 bg-white/[0.02] border border-white/[0.06] rounded-xl flex items-center justify-center relative shadow-[inset_0_0_20px_rgba(255,255,255,0.02)]">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:8px_8px] rounded-xl"></div>

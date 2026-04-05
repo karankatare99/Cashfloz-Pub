@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { email, username, password } = body
 
-    // ─── Validation ───────────────────────────────────────────────────────────
+    
     if (!email || !username || !password) {
       return NextResponse.json(
         { error: "Email, username and password are required." },
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // ─── Uniqueness check ─────────────────────────────────────────────────────
+    
     const existing = await prisma.user.findFirst({
       where: {
         OR: [
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // ─── Create user + portfolio + session in one transaction ─────────────────
+    
     const passwordHash = hashPassword(password)
     const token = generateSessionToken()
     const expiresAt = sessionExpiryDate()
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
       return { user, session }
     })
 
-    // ─── Set session cookie ───────────────────────────────────────────────────
+    
     const response = NextResponse.json(
       {
         user: {

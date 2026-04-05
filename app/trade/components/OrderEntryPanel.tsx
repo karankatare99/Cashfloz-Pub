@@ -26,14 +26,14 @@ export function OrderEntryPanel() {
   const [loading, setLoading]     = useState(false)
   const [toast, setToast]         = useState<string | null>(null)
 
-  // Fetch balance
+  
   useEffect(() => {
     axios.get("/api/user/balance")
       .then((res) => setBalance(res.data.cashBalance))
       .catch(() => {})
   }, [])
 
-  // Fetch recent trades every 3s
+  
   const fetchTrades = useCallback(() => {
     axios.get("/api/trade/recent-trades")
       .then((res) => setTrades(res.data.trades))
@@ -46,7 +46,7 @@ export function OrderEntryPanel() {
     return () => clearInterval(interval)
   }, [fetchTrades])
 
-  // Compute total from price × amount
+  
   const total = price && amount
     ? (parseFloat(price.replace(/,/g, "")) * parseFloat(amount)).toFixed(2)
     : "0.00"
@@ -63,7 +63,7 @@ export function OrderEntryPanel() {
       })
       setToast(`${side.toUpperCase()} order filled — ${amount} BTC @ $${price}`)
       setAmount("")
-      // Refresh balance
+      
       axios.get("/api/user/balance").then((res) => setBalance(res.data.cashBalance)).catch(() => {})
     } catch {
       setToast("Order failed. Please try again.")
@@ -76,7 +76,7 @@ export function OrderEntryPanel() {
   return (
     <motion.div variants={panelVariants} className="w-[340px] shrink-0 bg-[#0A0A0F] flex flex-col h-full relative z-10 shadow-[-4px_0_24px_rgba(0,0,0,0.2)]">
 
-      {/* Toast */}
+      {}
       {toast && (
         <motion.div
           initial={{ opacity: 0, y: -8 }}
@@ -88,7 +88,7 @@ export function OrderEntryPanel() {
         </motion.div>
       )}
 
-      {/* Buy / Sell tabs */}
+      {}
       <div className="p-6 border-b border-white/[0.06]">
         <Tabs value={side} onValueChange={setSide} className="w-full">
           <TabsList className="grid grid-cols-2 w-full p-1.5 bg-white/[0.02] border border-white/[0.06] rounded-xl h-auto">
@@ -103,7 +103,7 @@ export function OrderEntryPanel() {
       </div>
 
       <div className="p-6 flex-1 overflow-y-auto">
-        {/* Order type */}
+        {}
         <div className="flex gap-5 mb-8 text-xs font-inter uppercase tracking-[0.04em] font-medium">
           {["Limit", "Market", "Stop-Limit"].map((t) => (
             <span
@@ -121,7 +121,7 @@ export function OrderEntryPanel() {
         </div>
 
         <div className="space-y-6">
-          {/* Price */}
+          {}
           {orderType !== "Market" && (
             <div className="space-y-2">
               <label className="text-[13px] text-[#F5EDD6]/60 font-inter font-medium tracking-wide">Price (USD)</label>
@@ -137,7 +137,7 @@ export function OrderEntryPanel() {
             </div>
           )}
 
-          {/* Amount */}
+          {}
           <div className="space-y-2">
             <label className="text-[13px] text-[#F5EDD6]/60 font-inter font-medium tracking-wide">Amount (BTC)</label>
             <div className="relative">
@@ -152,7 +152,7 @@ export function OrderEntryPanel() {
             </div>
           </div>
 
-          {/* Slider */}
+          {}
           <div className="pt-2">
             <input
               type="range"
@@ -173,7 +173,7 @@ export function OrderEntryPanel() {
             </div>
           </div>
 
-          {/* Order summary */}
+          {}
           <div className="bg-white/[0.02] p-5 rounded-xl border border-white/[0.06] text-[13px] font-jetbrains-mono mt-8">
             <div className="flex justify-between mb-3">
               <span className="text-[#F5EDD6]/50">Available:</span>
@@ -191,7 +191,7 @@ export function OrderEntryPanel() {
             </div>
           </div>
 
-          {/* Submit */}
+          {}
           <Button
             onClick={handleSubmit}
             disabled={loading || !amount || parseFloat(amount) <= 0}
@@ -206,7 +206,7 @@ export function OrderEntryPanel() {
         </div>
       </div>
 
-      {/* Recent Trades */}
+      {}
       <div className="h-48 border-t border-white/[0.06] bg-transparent font-jetbrains-mono text-[11px]">
         <div className="px-6 py-3 border-b border-white/[0.04] text-[#F5EDD6]/40 flex justify-between font-inter uppercase tracking-[0.04em] font-medium">
           <span>Price</span><span>Amount</span><span>Time</span>

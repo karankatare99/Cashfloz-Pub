@@ -3,8 +3,8 @@ import React, { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import axios from "axios"
 
-// Component Imports
-import { Navbar } from "../../components/layout/Navbar" // Adjust path as needed
+
+import { Navbar } from "../../components/layout/Navbar" 
 import { containerVariants } from "./components/animations"
 import { HeroSection } from "./components/HeroSection"
 import { AboutSection } from "./components/AboutSection"
@@ -36,7 +36,7 @@ export default function LearnPage() {
         <GlossarySection />
         <FAQSection />
         
-        {/* CTA */}
+        {}
         <motion.section
           initial="hidden"
           whileInView="show"

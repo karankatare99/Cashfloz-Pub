@@ -28,10 +28,10 @@ export async function GET(req: NextRequest) {
     const cashBalance = session.user.portfolio?.cashBalance ?? 100000
     const startingBalance = 100000
 
-    // Simulate realistic dummy stats derived from balance
+    
     const pnl24h = parseFloat(((Math.random() - 0.3) * 2000).toFixed(2))
     const pnlRealized = parseFloat((pnl24h * 0.4).toFixed(2))
-    const marginUsed = parseFloat((Math.random() * 30 + 5).toFixed(1)) // 5–35%
+    const marginUsed = parseFloat((Math.random() * 30 + 5).toFixed(1)) 
     const allTimePnl = cashBalance - startingBalance
     const allTimePct = parseFloat(((allTimePnl / startingBalance) * 100).toFixed(2))
 

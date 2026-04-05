@@ -5,8 +5,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import axios from "axios"
 import { CreditCard, Landmark, Loader2, Wallet } from "lucide-react"
 
-// Component Imports
-import { Navbar } from "../../components/layout/Navbar" // Adjust path as needed
+
+import { Navbar } from "../../components/layout/Navbar" 
 import { CryptoTab } from "./components/CryptoTab"
 import { CardTab } from "./components/CardTab"
 import { BankTab } from "./components/BankTab"
@@ -25,18 +25,18 @@ export default function DepositPage() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
 
-  // Balance State
+  
   const [balanceBeforeDeposit, setBalanceBeforeDeposit] = useState(0)
   
-  // Crypto State
+  
   const [coin, setCoin] = useState("BTC")
   const [network, setNetwork] = useState("ERC-20")
   
-  // Card State
+  
   const [cardNumber, setCardNumber] = useState("")
   const [cardAmount, setCardAmount] = useState<number | "">("")
 
-  // Handlers
+  
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.replace(/\D/g, "")
     const formatted = val.match(/.{1,4}/g)?.join(" ") || val
@@ -88,7 +88,7 @@ export default function DepositPage() {
               </div>
 
               <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl backdrop-blur-xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-                {/* Tabs Header */}
+                {}
                 <div className="flex border-b border-white/[0.06] relative">
                   {TABS.map((tab) => {
                     const isActive = activeTab === tab.id
@@ -116,7 +116,7 @@ export default function DepositPage() {
                   })}
                 </div>
 
-                {/* Form Area */}
+                {}
                 <div className="p-6 md:p-8">
                   <AnimatePresence mode="wait">
                     {activeTab === "crypto" && (
@@ -128,7 +128,7 @@ export default function DepositPage() {
                     {activeTab === "bank" && <BankTab key="bank" />}
                   </AnimatePresence>
 
-                  {/* Submit Button */}
+                  {}
                   {activeTab !== "bank" && (
                     <button
                       onClick={handleSubmit}

@@ -27,7 +27,7 @@ export function PositionsTable() {
         .finally(() => setLoading(false))
 
     fetch()
-    // Refresh every 5 seconds for live price feel
+    
     const interval = setInterval(fetch, 5000)
     return () => clearInterval(interval)
   }, [])

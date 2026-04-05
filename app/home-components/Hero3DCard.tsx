@@ -38,7 +38,7 @@ export function Hero3DCard() {
         onMouseLeave={handleMouseLeave}
       >
         <div className="h-full w-full rounded-lg border border-gray-border overflow-hidden bg-navy relative" style={{ transform: "translateZ(50px)" }}>
-          {/* Faux Chart Area */}
+          {}
           <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#00FF88]/20 to-transparent flex items-end">
             <svg viewBox="0 0 100 50" preserveAspectRatio="none" className="w-full h-full stroke-accent fill-transparent stroke-2 opacity-80">
               <path d="M0 40 Q 10 30 20 20 T 40 35 T 60 10 T 80 25 T 100 5" />
